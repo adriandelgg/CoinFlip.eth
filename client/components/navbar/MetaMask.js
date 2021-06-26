@@ -1,6 +1,6 @@
 import { useContext } from 'react';
 import { Web3Context } from '../Web3Context';
-import artifact from '../../../../artifacts/contracts/Minter.sol/Minter.json';
+import artifact from '../../../artifacts/contracts/CoinFlip.sol/CoinFlip.json';
 
 const MetaMask = () => {
 	const { setContract, setProvider, ethers, setAccount } =
