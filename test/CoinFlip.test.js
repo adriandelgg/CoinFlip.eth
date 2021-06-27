@@ -108,4 +108,8 @@ describe('CoinFlip', function () {
 			expect(player2).to.equal(alice.address);
 		});
 	});
+
+	describe('Playing a Game', async function () {
+		it('should ', async () => {});
+	});
 });

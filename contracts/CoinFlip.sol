@@ -5,11 +5,11 @@ import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 import "hardhat/console.sol";
 
 contract CoinFlip is ERC20 {
-    uint256 private _gameID;
-
     constructor() ERC20("Coin Flip", "FLIP") {
         _mint(address(this), 10000000 * 10**decimals());
     }
+
+    uint256 private _gameID;
 
     // Mapping from game's ID to the addresses of the players
     mapping(uint256 => address) private _player1;
@@ -40,6 +40,7 @@ contract CoinFlip is ERC20 {
         }
     }
 
+    // Sets the player that will get to flip the coin.
     function setCoinFlipper(uint256 _id, uint256 _random) private {
         if (_random == 1) {
             _coinFlipper[_id] = _player1[_id];
@@ -69,6 +70,9 @@ contract CoinFlip is ERC20 {
         _gameID++;
     }
 
+    // Allows a second player to bet in on a game.
+    // A game must already exist without a 2nd player to join.
+    // Will randomly select the coin flipper from the front end.
     function betTokens(
         uint256 _amount,
         uint256 _id,
@@ -87,9 +91,16 @@ contract CoinFlip is ERC20 {
         setCoinFlipper(_id, _random);
     }
 
-    // function startGame() public {
-    //     require()
-    // }
+    // Needs work
+    function startGame(uint256 _id, uint256 _random) public {
+        require(msg.sender == _coinFlipper[_id], "You're not the coin flipper");
+        require(_random == 1 || _random == 2, "Random number must be 1 or 2");
+        if (_random == 1) {
+            // Set winner
+        } else {
+            // Set loser
+        }
+    }
 
     // Let player put funds in for a game
     // Funds can be random, but must equal each other from both players
