@@ -22,6 +22,21 @@ contract CoinFlip is ERC20 {
         return _gameID;
     }
 
+    // Gets the player's address from the mapping
+    function getPlayerAddress(uint256 _player, uint256 _id)
+        public
+        view
+        returns (address)
+    {
+        require(_player == 0 || _player == 1, "Number must be 0 or 1");
+        require(_id < _gameID, "Game doesn't exist");
+        if (_player == 0) {
+            return _player1[_id];
+        } else {
+            return _player2[_id];
+        }
+    }
+
     /**
      * @dev Let's users get ERC20 tokens to bet with.
      */

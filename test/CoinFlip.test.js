@@ -2,6 +2,7 @@ const { expect } = require('chai');
 
 describe('CoinFlip', function () {
 	let CoinFlip, owner, alice, bob, contract, token1, token2;
+	const oneEther = ethers.BigNumber.from('1000000000000000000');
 
 	beforeEach(async function () {
 		CoinFlip = await ethers.getContractFactory('CoinFlip');
@@ -40,15 +41,26 @@ describe('CoinFlip', function () {
 		await expect(contract.selectPlayer(1)).to.not.be.reverted;
 	});
 
-	it('should create a new game & set values properly to mappings', async () => {
-		await expect(contract.createGame(1e12)).to.be.reverted;
-		const contractAmountBefore = +(await contract.balanceOf(contract.address));
-
-		const oneEther = ethers.BigNumber.from('1000000000000000000');
-		console.log(oneEther);
+	it("should return correct player's address", async () => {
+		// expect(await contract.getPlayerAddress(0, 0)).to.equal('0x0');
 		await contract.getTokens(oneEther);
+		await contract.createGame(3e12);
+
+		console.log(await contract.getPlayerAddress(0, 0));
+	});
+
+	it('should create a new game & set values properly to mappings', async () => {
+		// Checks that tokens were transferred to caller
+		await contract.getTokens(oneEther);
+		await expect(contract.createGame(1e12)).to.be.reverted;
+
 		expect(await contract.balanceOf(owner.address)).to.equal(oneEther);
-		// await contract.createGame(3e12);
-		// const contractAmountAfter = +(await contract.balanceOf(contract.address));
+
+		// Checks that contract received collateral
+		const contractAmountBefore = await contract.balanceOf(contract.address);
+		await contract.createGame(3e12);
+		const contractAmountAfter = await contract.balanceOf(contract.address);
+
+		expect(contractAmountBefore.lt(contractAmountAfter)).to.be.true;
 	});
 });
