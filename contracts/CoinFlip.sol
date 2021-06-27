@@ -34,20 +34,26 @@ contract CoinFlip is ERC20 {
         require(_player == 0 || _player == 1, "Number must be 0 or 1");
     }
 
+    // Creates a new game with the player initializing the amount
+    // they want to bet.
     function createGame(uint256 _amount) public {
         require(
             _amount <= balanceOf(msg.sender) && _amount >= 2e12,
             "Not enough or too many tokens"
         );
+        transfer(address(this), _amount);
         _player1[_gameID] = msg.sender;
+        _betAmount[_gameID] = _amount;
+        _gameID++;
     }
 
     function betTokens(uint256 _amount, uint256 _id) public {
-        require(_id <= _gameID, "Game doesn't exist!");
         require(
             _amount <= balanceOf(msg.sender) && _amount >= 2e12,
             "Not enough or too many tokens"
         );
+        require(_id <= _gameID, "Game doesn't exist!");
+        require(_player2[_id] != address(0), "2nd player already exists");
         require(_amount <= _betAmount[_id], "Amount not equal to bet amount");
         _player2[_id] = msg.sender;
     }
