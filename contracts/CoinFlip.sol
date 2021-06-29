@@ -9,7 +9,14 @@ contract CoinFlip is ERC20 {
         _mint(address(this), 10000000 * 10**decimals());
     }
 
+    // Keeps track of the number of games created
     uint256 private _gameID;
+
+    // Checks to make sure the player number given is 1 or 2
+    modifier numCheck(uint256 _playerNum) {
+        require(_playerNum == 1 || _playerNum == 2, "Number must be 1 or 2");
+        _;
+    }
 
     // Mapping from game's ID to the addresses of the players
     mapping(uint256 => address) private _player1;
@@ -25,36 +32,27 @@ contract CoinFlip is ERC20 {
         return _gameID;
     }
 
-    // Gets the player's address from the mapping
-    function getPlayerAddress(uint256 _player, uint256 _id)
-        public
-        view
-        returns (address)
-    {
-        require(_player == 1 || _player == 2, "Number must be 1 or 2");
-        require(_id < _gameID, "Game doesn't exist");
-        if (_player == 1) {
-            return _player1[_id];
-        } else {
-            return _player2[_id];
-        }
-    }
-
-    // Sets the player that will get to flip the coin.
-    function setCoinFlipper(uint256 _id, uint256 _random) private {
-        if (_random == 1) {
-            _coinFlipper[_id] = _player1[_id];
-        } else {
-            _coinFlipper[_id] = _player2[_id];
-        }
-    }
-
     /**
      * @dev Let's users get ERC20 tokens to bet with.
      */
     function getTokens(uint256 _amount) public {
         require(_amount < totalSupply(), "Amount is more than total supply.");
         _transfer(address(this), msg.sender, _amount);
+    }
+
+    // Gets the player's address from the mapping
+    function getPlayerAddress(uint256 _player, uint256 _id)
+        public
+        view
+        numCheck(_player)
+        returns (address)
+    {
+        require(_id < _gameID, "Game doesn't exist");
+        if (_player == 1) {
+            return _player1[_id];
+        } else {
+            return _player2[_id];
+        }
     }
 
     // Creates a new game with the player initializing the amount
@@ -77,13 +75,12 @@ contract CoinFlip is ERC20 {
         uint256 _amount,
         uint256 _id,
         uint256 _random
-    ) public {
+    ) public numCheck(_random) {
         require(
             _amount <= balanceOf(msg.sender) && _amount >= 2e12,
             "Not enough or too many tokens"
         );
         require(_id < _gameID, "Game doesn't exist!");
-        require(_random == 1 || _random == 2, "Random number must be 1 or 2");
         require(_player2[_id] == address(0), "2nd player already exists");
         require(_amount == _betAmount[_id], "Amount not equal to bet amount");
         transfer(address(this), _amount);
@@ -92,13 +89,21 @@ contract CoinFlip is ERC20 {
     }
 
     // Needs work
-    function startGame(uint256 _id, uint256 _random) public {
+    function startGame(uint256 _id, uint256 _random) public numCheck(_random) {
         require(msg.sender == _coinFlipper[_id], "You're not the coin flipper");
-        require(_random == 1 || _random == 2, "Random number must be 1 or 2");
         if (_random == 1) {
             // Set winner
         } else {
             // Set loser
+        }
+    }
+
+    // Sets the player that will get to flip the coin.
+    function setCoinFlipper(uint256 _id, uint256 _random) private {
+        if (_random == 1) {
+            _coinFlipper[_id] = _player1[_id];
+        } else {
+            _coinFlipper[_id] = _player2[_id];
         }
     }
 
