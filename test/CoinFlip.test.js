@@ -115,40 +115,56 @@ describe('CoinFlip', function () {
 	});
 
 	describe('Playing a Game', async function () {
-		describe('Correct Winner', async function () {
-			beforeEach(async function () {
-				await contract.getTokens(oneEther);
-				await contract2.getTokens(oneEther);
-				await contract.createGame(3e12);
-				randomNum = Math.floor(Math.random() * 2) + 1;
-			});
+		beforeEach(async function () {
+			await contract.getTokens(oneEther);
+			await contract2.getTokens(oneEther);
+			await contract.createGame(3e12);
+			randomNum = Math.floor(Math.random() * 2) + 1;
+		});
 
-			it('should approve the correct winner #1', async () => {
-				await contract2.betTokens(3e12, 0, 1);
+		it('should have coinflipper win', async () => {
+			await contract2.betTokens(3e12, 0, 1);
 
-				await expect(contract2.startGame(0, 2)).to.be.revertedWith(
-					"You're not the coin flipper"
-				);
-				await contract.startGame(0, 1);
+			await expect(contract2.startGame(0, 2)).to.be.revertedWith(
+				"You're not the coin flipper"
+			);
+			await contract.startGame(0, 1);
 
-				expect(
-					await contract.allowance(contract.address, owner.address)
-				).to.equal(3e12);
-			});
+			expect(await contract.allowance(contract.address, owner.address)).to.equal(
+				3e12
+			);
+		});
 
-			it('should approve the correct winner #2', async () => {
-				await contract2.betTokens(3e12, 0, 1);
-				await expect(contract2.startGame(0, 2)).to.be.revertedWith(
-					"You're not the coin flipper"
-				);
-				await contract.startGame(0, 2);
+		it('should have non-coinflipper win', async () => {
+			await contract2.betTokens(3e12, 0, 1);
+			await contract.startGame(0, 2);
 
-				expect(
-					await contract.allowance(contract.address, alice.address)
-				).to.equal(3e12);
-			});
+			expect(await contract.allowance(contract.address, alice.address)).to.equal(
+				3e12
+			);
+		});
 
-			it('should ', async () => {});
+		it('should have non-coinflipper player 1 win', async () => {
+			await contract2.createGame(3e12);
+			await contract.betTokens(3e12, 1, 2);
+			await contract.startGame(1, 2);
+
+			expect(await contract.allowance(contract.address, alice.address)).to.equal(
+				3e12
+			);
+		});
+
+		it('should withdraw earnings', async () => {
+			await contract2.betTokens(3e12, 0, 1);
+			await contract.startGame(0, 2);
+
+			expect(await contract.allowance(contract.address, alice.address)).to.equal(
+				3e12
+			);
+
+			await expect(() =>
+				contract2.transferFrom(contract2.address, alice.address, 3e4)
+			).to.changeTokenBalance(contract2, alice, 3e4);
 		});
 	});
 });

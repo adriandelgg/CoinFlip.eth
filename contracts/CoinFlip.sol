@@ -83,7 +83,11 @@ contract CoinFlip is ERC20 {
         _setCoinFlipper(_id, _random);
     }
 
-    // Needs work
+    /**
+     * @dev Lets only the coin flipper start the game. Approves an allowance
+     * to the winner player so that they can then withdraw it later.
+     * Use transferFrom() to withdraw your earnings.
+     */
     function startGame(uint256 _id, uint256 _random) public numCheck(_random) {
         address coinFlipper = _coinFlipper[_id];
         require(msg.sender == coinFlipper, "You're not the coin flipper");
@@ -102,8 +106,6 @@ contract CoinFlip is ERC20 {
         }
     }
 
-    function withdrawEarnings() public {}
-
     // Sets the player that will get to flip the coin.
     function _setCoinFlipper(uint256 _id, uint256 _random) private {
         if (_random == 1) {
@@ -121,6 +123,6 @@ contract CoinFlip is ERC20 {
     // Store funds, address, and gameID /
     // When another player deposits funds into gameID /
     // Choose a random one of the 2 players to flip the coin /
-    // Store info of players winning and loses to be able
-    // to withdraw their balance whenever they want
+    // Store info of players winning and loses to be able /
+    // to withdraw their balance whenever they want /
 }
