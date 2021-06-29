@@ -11,25 +11,33 @@ describe('CoinFlip', function () {
 		contract2 = contract.connect(alice);
 	});
 
-	it('should store tokens to contract on deployment', async () => {
-		// Checks that contract has tokens stored when deployed
-		const result = await contract.balanceOf(contract.address);
-		const resultInWei = ethers.utils.formatEther(result);
-		expect(+resultInWei).to.equal(1e7);
+	describe('Checking ERC20 Tokens', async function () {
+		it('should store tokens to contract on deployment', async () => {
+			// Checks that contract has tokens stored when deployed
+			const result = await contract.balanceOf(contract.address);
+			const resultInWei = ethers.utils.formatEther(result);
+			expect(+resultInWei).to.equal(1e7);
 
-		// Makes sure deployer doesn't have any tokens
-		const ownerBalance = (await contract.balanceOf(owner.address)).toNumber();
-		expect(ownerBalance).to.equal(0);
-	});
+			// Makes sure deployer doesn't have any tokens
+			const ownerBalance = (await contract.balanceOf(owner.address)).toNumber();
+			expect(ownerBalance).to.equal(0);
+		});
 
-	it('should let you get ERC20 tokens', async () => {
-		const contractAmountBefore = +(await contract.balanceOf(contract.address));
-		await contract.getTokens(1e12);
-		const ownerBalance = +(await contract.balanceOf(owner.address));
-		const contractAmountAfter = +(await contract.balanceOf(contract.address));
+		it('should let you get ERC20 tokens', async () => {
+			const contractAmountBefore = +(await contract.balanceOf(contract.address));
+			await contract.getTokens(1e12);
+			const ownerBalance = +(await contract.balanceOf(owner.address));
+			const contractAmountAfter = +(await contract.balanceOf(contract.address));
 
-		expect(ownerBalance).to.equal(1e12);
-		expect(contractAmountBefore).to.be.greaterThan(contractAmountAfter);
+			expect(ownerBalance).to.equal(1e12);
+			expect(contractAmountBefore).to.be.greaterThan(contractAmountAfter);
+		});
+
+		it('should fail if you get more tokens than are available', async () => {
+			await expect(
+				contract.getTokens(ethers.BigNumber.from('1000000000000000000000000000'))
+			).to.be.reverted;
+		});
 	});
 
 	describe('Setting up Player 1 & Game', async function () {
@@ -83,17 +91,14 @@ describe('CoinFlip', function () {
 				'Amount not equal to bet amount'
 			);
 			await contract2.betTokens(3e12, 0, randomNum);
-			await expect(contract2.betTokens(3e12, 1, randomNum)).to.be.revertedWith(
-				"Game doesn't exist!"
-			);
 			await expect(contract2.betTokens(3e12, 0, randomNum)).to.be.revertedWith(
 				'2nd player already exists'
 			);
 			await expect(
 				contract2.betTokens(oneEther, 0, randomNum)
-			).to.be.revertedWith('Not enough or too many tokens');
+			).to.be.revertedWith('Amount not equal to bet amount');
 			await expect(contract2.betTokens(1, 0, randomNum)).to.be.revertedWith(
-				'Not enough or too many tokens'
+				'Amount not equal to bet amount'
 			);
 		});
 
@@ -110,6 +115,40 @@ describe('CoinFlip', function () {
 	});
 
 	describe('Playing a Game', async function () {
-		it('should ', async () => {});
+		describe('Correct Winner', async function () {
+			beforeEach(async function () {
+				await contract.getTokens(oneEther);
+				await contract2.getTokens(oneEther);
+				await contract.createGame(3e12);
+				randomNum = Math.floor(Math.random() * 2) + 1;
+			});
+
+			it('should approve the correct winner #1', async () => {
+				await contract2.betTokens(3e12, 0, 1);
+
+				await expect(contract2.startGame(0, 2)).to.be.revertedWith(
+					"You're not the coin flipper"
+				);
+				await contract.startGame(0, 1);
+
+				expect(
+					await contract.allowance(contract.address, owner.address)
+				).to.equal(3e12);
+			});
+
+			it('should approve the correct winner #2', async () => {
+				await contract2.betTokens(3e12, 0, 1);
+				await expect(contract2.startGame(0, 2)).to.be.revertedWith(
+					"You're not the coin flipper"
+				);
+				await contract.startGame(0, 2);
+
+				expect(
+					await contract.allowance(contract.address, alice.address)
+				).to.equal(3e12);
+			});
+
+			it('should ', async () => {});
+		});
 	});
 });
