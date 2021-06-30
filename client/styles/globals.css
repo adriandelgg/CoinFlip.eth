@@ -15,3 +15,7 @@
 .action-card {
 	@apply flex flex-col p-5 my-2 border rounded-lg w-min shadow;
 }
+
+.btn {
+	@apply text-white font-bold py-1 px-4 rounded;
+}

@@ -2,6 +2,7 @@ import React, { createContext, useState, useEffect } from 'react';
 import { ethers } from 'ethers';
 
 export const Web3Context = createContext();
+const oneEther = ethers.BigNumber.from('1000000000000000000');
 
 const Web3Provider = ({ children }) => {
 	const [contract, setContract] = useState(null);
@@ -40,7 +41,8 @@ const Web3Provider = ({ children }) => {
 				contract,
 				setContract,
 				account,
-				setAccount
+				setAccount,
+				oneEther
 			}}
 		>
 			{children}
