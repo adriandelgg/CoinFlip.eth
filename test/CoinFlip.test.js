@@ -11,7 +11,7 @@ describe('CoinFlip', function () {
 		contract2 = contract.connect(alice);
 	});
 
-	describe('Checking ERC20 Tokens', async function () {
+	xdescribe('Checking ERC20 Tokens', async function () {
 		it('should store tokens to contract on deployment', async () => {
 			// Checks that contract has tokens stored when deployed
 			const result = await contract.balanceOf(contract.address);
@@ -40,7 +40,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	describe('Setting up Player 1 & Game', async function () {
+	xdescribe('Setting up Player 1 & Game', async function () {
 		it('should revert if player is not 1 or 2', async () => {
 			await expect(contract.getPlayerAddress(7, 0)).to.be.reverted;
 			await expect(contract.getPlayerAddress(3, 0)).to.be.revertedWith(
@@ -78,7 +78,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	describe('Setting up Player 2', () => {
+	xdescribe('Setting up Player 2', () => {
 		beforeEach(async function () {
 			await contract.getTokens(oneEther);
 			await contract2.getTokens(oneEther);
@@ -114,7 +114,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	describe('Playing a Game', async function () {
+	xdescribe('Playing a Game', async function () {
 		beforeEach(async function () {
 			await contract.getTokens(oneEther);
 			await contract2.getTokens(oneEther);
@@ -165,6 +165,33 @@ describe('CoinFlip', function () {
 			await expect(() =>
 				contract2.transferFrom(contract2.address, alice.address, 3e4)
 			).to.changeTokenBalance(contract2, alice, 3e4);
+		});
+	});
+
+	describe('Fetching Data', () => {
+		beforeEach(async function () {
+			await contract.getTokens(oneEther);
+			await contract2.getTokens(oneEther);
+			await contract.createGame(3e12);
+			await contract2.betTokens(3e12, 0, 1);
+			await contract.startGame(0, 2);
+		});
+
+		xit('should check for gas in createGame()', async () => {
+			const result = await contract.estimateGas.createGame(3e12);
+			await contract.createGame(3e12);
+			console.log(result.toString());
+
+			const gameReady = await contract.getGamesReady(1);
+			console.log(gameReady);
+		});
+
+		it('should check gas for betTokens()', async () => {
+			await contract.createGame(3e12);
+			const result = await contract.estimateGas.betTokens(3e12, 1, 1);
+			console.log(result.toString());
+
+			await contract.betTokens(3e12, 1, 1);
 		});
 	});
 });

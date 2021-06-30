@@ -15,14 +15,14 @@ const MetaMask = () => {
 				});
 				const signer = provider.getSigner(account);
 				const contract = new ethers.Contract(
-					'0x5FbDB2315678afecb367f032d93F642f64180aa3',
+					'0xd3FFD73C53F139cEBB80b6A524bE280955b3f4db',
 					artifact.abi,
 					signer
 				);
 
 				console.log(contract);
 				const result = await contract.balanceOf(
-					'0x5FbDB2315678afecb367f032d93F642f64180aa3'
+					'0xd3FFD73C53F139cEBB80b6A524bE280955b3f4db'
 				);
 				console.log(result);
 				setProvider(provider);

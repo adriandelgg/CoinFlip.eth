@@ -17,7 +17,7 @@ task('accounts', 'Prints the list of accounts', async () => {
  * @type import('hardhat/config').HardhatUserConfig
  */
 module.exports = {
-	defaultNetwork: 'hardhat',
+	defaultNetwork: 'localhost',
 	networks: {
 		rinkeby: {
 			url: process.env.INFURA_RINKEBY_KEY,

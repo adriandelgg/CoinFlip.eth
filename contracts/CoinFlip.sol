@@ -11,7 +11,10 @@ contract CoinFlip is ERC20 {
     // Keeps track of the number of games created
     uint256 private _gameID;
 
-    // Mapping from game's ID to the addresses of the players
+    // Keeps track of currently active games
+    uint256 private _totalOpenGames;
+
+    // Mapping from game ID to the addresses of the players
     mapping(uint256 => address) private _player1;
     mapping(uint256 => address) private _player2;
 
@@ -21,12 +24,17 @@ contract CoinFlip is ERC20 {
     // Mapping from game ID to player that gets to flip coin
     mapping(uint256 => address) private _coinFlipper;
 
-    // struct GameReady {
-    //     address player1;
-    //     address player2;
-    //     address coinFlipper;
-    //     uint256 betAmount;
-    // }
+    // Struct for games that are ready to be played
+    struct GameReady {
+        address player1;
+        address player2;
+        address coinFlipper;
+        uint256 betAmount;
+        uint256 gameID;
+    }
+
+    // Mapping from game ID to games ready struct
+    mapping(uint256 => GameReady) private _gamesReady;
 
     // Checks to make sure the number given is 1 or 2
     modifier numCheck(uint8 _playerNum) {
@@ -64,6 +72,11 @@ contract CoinFlip is ERC20 {
         }
     }
 
+    // Returns games ready struct from mapping
+    function getGamesReady(uint256 _id) public view returns (GameReady memory) {
+        return _gamesReady[_id];
+    }
+
     /**
      * @dev Let's users get ERC20 tokens to bet with.
      */
@@ -78,8 +91,12 @@ contract CoinFlip is ERC20 {
     function createGame(uint256 _amount) public {
         require(_amount > 2e12, "Amount must be more than 2e12");
         transfer(address(this), _amount);
-        _player1[_gameID] = msg.sender;
-        _betAmount[_gameID] = _amount - 2e12;
+
+        uint256 gameID = _gameID; // Gas saving trick
+        _player1[gameID] = msg.sender;
+        _betAmount[gameID] = _amount - 2e12;
+        _gamesReady[gameID].player1 = msg.sender;
+        _gamesReady[gameID].gameID = gameID;
         _gameID++;
     }
 
@@ -104,13 +121,16 @@ contract CoinFlip is ERC20 {
         transfer(address(this), _amount);
         _player2[_id] = msg.sender;
         _setCoinFlipper(_id, _random);
+        _gamesReady[_id].player2 = msg.sender;
+        _gamesReady[_id].betAmount = _amount - 2e12;
+        _gamesReady[_id].coinFlipper = _coinFlipper[_id];
     }
 
     /**
-     * @dev Use transferFrom() to withdraw your earnings.
-     *
      * Lets only the coin flipper start the game. Approves an allowance
      * to the winner player so that they can then withdraw it later.
+     *
+     * @dev Use transferFrom() to withdraw your earnings.
      */
     function startGame(uint256 _id, uint8 _random) public numCheck(_random) {
         address coinFlipper = _coinFlipper[_id];
@@ -121,18 +141,22 @@ contract CoinFlip is ERC20 {
 
         if (_random == 1) {
             _approve(address(this), coinFlipper, totalEarnings);
+            delete _gamesReady[_id];
         } else {
             if (coinFlipper == player1) {
                 _approve(address(this), _player2[_id], totalEarnings);
+                delete _gamesReady[_id];
             } else {
                 _approve(address(this), player1, totalEarnings);
+                delete _gamesReady[_id];
             }
         }
     }
 
     /**
      * Sets the player that will get to flip the coin.
-     * Is called by betTokens()
+     *
+     * @dev Is called by betTokens()
      */
     function _setCoinFlipper(uint256 _id, uint8 _random) private {
         if (_random == 1) {
