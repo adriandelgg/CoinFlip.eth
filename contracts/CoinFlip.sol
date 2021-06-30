@@ -22,18 +22,28 @@ contract CoinFlip is ERC20 {
     mapping(uint256 => address) private _coinFlipper;
 
     // Checks to make sure the number given is 1 or 2
-    modifier numCheck(uint256 _playerNum) {
+    modifier numCheck(uint8 _playerNum) {
         require(_playerNum == 1 || _playerNum == 2, "Number must be 1 or 2");
         _;
     }
 
     // Returns the current game ID
-    function currentGameID() public view returns (uint256) {
+    function getGameID() public view returns (uint256) {
         return _gameID;
     }
 
-    // Gets the players' address from the mapping
-    function getPlayerAddress(uint256 _player, uint256 _id)
+    // Returns total amount bet for X game
+    function getAmountBet(uint256 _id) public view returns (uint256) {
+        return _betAmount[_id];
+    }
+
+    // Returns who the coin flipper is for X game
+    function getCoinFlipper(uint256 _id) public view returns (address) {
+        return _coinFlipper[_id];
+    }
+
+    // Returns the players' address assigned to a game
+    function getPlayerAddress(uint8 _player, uint256 _id)
         public
         view
         numCheck(_player)
@@ -76,7 +86,7 @@ contract CoinFlip is ERC20 {
     function betTokens(
         uint256 _amount,
         uint256 _id,
-        uint256 _random
+        uint8 _random
     ) public numCheck(_random) {
         require(
             _amount == _betAmount[_id] + 2e12,
@@ -95,7 +105,7 @@ contract CoinFlip is ERC20 {
      * Lets only the coin flipper start the game. Approves an allowance
      * to the winner player so that they can then withdraw it later.
      */
-    function startGame(uint256 _id, uint256 _random) public numCheck(_random) {
+    function startGame(uint256 _id, uint8 _random) public numCheck(_random) {
         address coinFlipper = _coinFlipper[_id];
         require(msg.sender == coinFlipper, "You're not the coin flipper");
 
@@ -117,7 +127,7 @@ contract CoinFlip is ERC20 {
      * Sets the player that will get to flip the coin.
      * Is called by betTokens()
      */
-    function _setCoinFlipper(uint256 _id, uint256 _random) private {
+    function _setCoinFlipper(uint256 _id, uint8 _random) private {
         if (_random == 1) {
             _coinFlipper[_id] = _player1[_id];
         } else {
