@@ -8,17 +8,15 @@ const NewGame = () => {
 
 	async function createNewGame(e: React.MouseEvent<HTMLButtonElement>) {
 		e.preventDefault();
-		console.log(contract);
 		const result = await contract.balanceOf(
 			'0x5FbDB2315678afecb367f032d93F642f64180aa3'
 		);
 		console.log(result);
 
 		if (amount) {
-			const betAmount = ethers.BigNumber.from(amount);
-			console.log(betAmount);
-			const result = await contract.createGame(amount);
-			console.log(result);
+			const betAmount = ethers.utils.parseUnits(amount);
+			console.log(betAmount.toString());
+			const result = await contract.createGame(betAmount);
 			setAmount('');
 		}
 	}
@@ -39,6 +37,10 @@ const NewGame = () => {
 				min={0}
 				onChange={e => setAmount(e.target.value)}
 			/>
+			<p className="text-xs pt-2">
+				*Bet amount must be more than 2 szabo (2e12).
+			</p>
+			<p className="text-center">{amount || 0} Ξ</p>
 			<button
 				className="py-1 px-4 mx-auto mt-4 bg-green-400
         text-white font-bold w-max rounded"

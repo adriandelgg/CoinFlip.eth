@@ -9,7 +9,9 @@ export default function Home() {
 				<h1>CoinFlip ETH Game</h1>
 				<h2>by Adrian Delgado</h2>
 			</div>
-			<NewGame />
+			<main>
+				<NewGame />
+			</main>
 		</>
 	);
 }

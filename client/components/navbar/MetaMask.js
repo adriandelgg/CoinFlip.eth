@@ -19,6 +19,12 @@ const MetaMask = () => {
 					artifact.abi,
 					signer
 				);
+
+				console.log(contract);
+				const result = await contract.balanceOf(
+					'0x5FbDB2315678afecb367f032d93F642f64180aa3'
+				);
+				console.log(result);
 				setProvider(provider);
 				setContract(contract);
 				setAccount(account);
