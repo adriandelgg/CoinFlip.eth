@@ -21,6 +21,13 @@ contract CoinFlip is ERC20 {
     // Mapping from game ID to player that gets to flip coin
     mapping(uint256 => address) private _coinFlipper;
 
+    // struct GameReady {
+    //     address player1;
+    //     address player2;
+    //     address coinFlipper;
+    //     uint256 betAmount;
+    // }
+
     // Checks to make sure the number given is 1 or 2
     modifier numCheck(uint8 _playerNum) {
         require(_playerNum == 1 || _playerNum == 2, "Number must be 1 or 2");
