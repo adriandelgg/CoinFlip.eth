@@ -2,7 +2,6 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "hardhat/console.sol";
 
 contract CoinFlip is ERC20 {
     constructor() ERC20("Coin Flip", "FLIP") {
@@ -22,17 +21,18 @@ contract CoinFlip is ERC20 {
     // Mapping from game ID to player that gets to flip coin
     mapping(uint256 => address) private _coinFlipper;
 
-    // Checks to make sure the player number given is 1 or 2
+    // Checks to make sure the number given is 1 or 2
     modifier numCheck(uint256 _playerNum) {
         require(_playerNum == 1 || _playerNum == 2, "Number must be 1 or 2");
         _;
     }
 
+    // Returns the current game ID
     function currentGameID() public view returns (uint256) {
         return _gameID;
     }
 
-    // Gets the player's address from the mapping
+    // Gets the players' address from the mapping
     function getPlayerAddress(uint256 _player, uint256 _id)
         public
         view
@@ -54,8 +54,10 @@ contract CoinFlip is ERC20 {
         _transfer(address(this), msg.sender, _amount);
     }
 
-    // Creates a new game with the player initializing the amount
-    // they want to bet.
+    /**
+     * @dev Creates a new game with the player initializing the amount.
+     * Minimum amount must be more than 2e12 since the loser pays the gas fee.
+     */
     function createGame(uint256 _amount) public {
         require(_amount > 2e12, "Amount must be more than 2e12");
         transfer(address(this), _amount);
@@ -64,9 +66,13 @@ contract CoinFlip is ERC20 {
         _gameID++;
     }
 
-    // Allows a second player to bet in on a game.
-    // A game must already exist without a 2nd player to join.
-    // Will randomly select the coin flipper from the front end.
+    /**
+     * @dev Random number must be generated from the frontend to determine
+     * the coin flipper.
+     *
+     * Allows a second player to bet in on a game.
+     * A game must already exist without a 2nd player to join.
+     */
     function betTokens(
         uint256 _amount,
         uint256 _id,
@@ -84,9 +90,10 @@ contract CoinFlip is ERC20 {
     }
 
     /**
-     * @dev Lets only the coin flipper start the game. Approves an allowance
+     * @dev Use transferFrom() to withdraw your earnings.
+     *
+     * Lets only the coin flipper start the game. Approves an allowance
      * to the winner player so that they can then withdraw it later.
-     * Use transferFrom() to withdraw your earnings.
      */
     function startGame(uint256 _id, uint256 _random) public numCheck(_random) {
         address coinFlipper = _coinFlipper[_id];
@@ -106,7 +113,10 @@ contract CoinFlip is ERC20 {
         }
     }
 
-    // Sets the player that will get to flip the coin.
+    /**
+     * Sets the player that will get to flip the coin.
+     * Is called by betTokens()
+     */
     function _setCoinFlipper(uint256 _id, uint256 _random) private {
         if (_random == 1) {
             _coinFlipper[_id] = _player1[_id];
@@ -114,15 +124,4 @@ contract CoinFlip is ERC20 {
             _coinFlipper[_id] = _player2[_id];
         }
     }
-
-    // Function Game steps in order:
-    // getTokens, createGame, betTokens, startGame
-
-    // Let player put funds in for a game /
-    // Funds can be random, but must equal each other from both players /
-    // Store funds, address, and gameID /
-    // When another player deposits funds into gameID /
-    // Choose a random one of the 2 players to flip the coin /
-    // Store info of players winning and loses to be able /
-    // to withdraw their balance whenever they want /
 }
