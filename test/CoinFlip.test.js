@@ -168,13 +168,10 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	describe('Fetching Data', () => {
+	describe('Gas Checkers', () => {
 		beforeEach(async function () {
 			await contract.getTokens(oneEther);
 			await contract2.getTokens(oneEther);
-			await contract.createGame(3e12);
-			await contract2.betTokens(3e12, 0, 1);
-			await contract.startGame(0, 2);
 		});
 
 		xit('should check for gas in createGame()', async () => {
@@ -186,12 +183,42 @@ describe('CoinFlip', function () {
 			console.log(gameReady);
 		});
 
-		it('should check gas for betTokens()', async () => {
+		xit('should check gas for betTokens()', async () => {
 			await contract.createGame(3e12);
-			const result = await contract2.estimateGas.betTokens(3e12, 1, 1);
+			const result = await contract2.estimateGas.betTokens(3e12, 0, 1);
 			console.log(result.toString());
 
 			await contract2.betTokens(3e12, 1, 1);
+		});
+
+		xit('should check getPlayerAddress() gas', async () => {
+			const result = await contract.estimateGas.getPlayerAddress(2, 0);
+			console.log(result.toString());
+		});
+
+		it('should check createGame() refactored', async () => {
+			const result = await contract.estimateGas.createGame(3e12);
+			console.log(result.toString());
+		});
+
+		xit('should check betTokens() refactored', async () => {
+			await contract.createGame(3e12);
+			const result = await contract2.estimateGas.betTokens(3e12, 0, 1);
+			console.log(result.toString());
+		});
+
+		xit('should check setCoinFlipper()', async () => {
+			await contract.createGame(3e12);
+			// const result = await contract.getGames(0);
+			const result = await contract.estimateGas._setCoinFlipper(0, 1);
+			console.log(result.toString());
+		});
+
+		xit('should check startGame()', async () => {
+			await contract.createGame(3e12);
+			await contract2.betTokens(3e12, 0, 1);
+			const result = await contract.estimateGas.startGame(0, 1);
+			console.log(result.toString());
 		});
 	});
 });

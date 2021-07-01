@@ -2,6 +2,7 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
+import "hardhat/console.sol";
 
 contract CoinFlip is ERC20 {
     constructor() ERC20("Coin Flip", "FLIP") {
@@ -12,9 +13,6 @@ contract CoinFlip is ERC20 {
 
     // Keeps track of the number of games created
     uint256 private _gameID;
-
-    // Keeps track of currently active games
-    uint256 private _totalOpenGames;
 
     // Mapping from game ID to the addresses of the players
     mapping(uint256 => address) private _player1;
@@ -27,7 +25,7 @@ contract CoinFlip is ERC20 {
     mapping(uint256 => address) private _coinFlipper;
 
     // Struct for games that are ready to be played
-    struct GameReady {
+    struct Games {
         address player1;
         address player2;
         address coinFlipper;
@@ -36,7 +34,7 @@ contract CoinFlip is ERC20 {
     }
 
     // Mapping from game ID to games ready struct
-    mapping(uint256 => GameReady) private _gamesReady;
+    mapping(uint256 => Games) private _games;
 
     // Checks to make sure the number given is 1 or 2
     modifier numCheck(uint8 _playerNum) {
@@ -68,15 +66,15 @@ contract CoinFlip is ERC20 {
     {
         require(_id < _gameID, "Game doesn't exist");
         if (_player == 1) {
-            return _player1[_id];
+            return _games[_id].player1;
         } else {
-            return _player2[_id];
+            return _games[_id].player2;
         }
     }
 
-    // Returns games ready struct from mapping
-    function getGamesReady(uint256 _id) public view returns (GameReady memory) {
-        return _gamesReady[_id];
+    // Returns Games struct from mapping
+    function getGames(uint256 _id) public view returns (Games memory) {
+        return _games[_id];
     }
 
     /**
@@ -94,12 +92,10 @@ contract CoinFlip is ERC20 {
         require(_amount > 2e12, "Amount must be more than 2e12");
         transfer(address(this), _amount);
 
-        uint256 gameID = _gameID; // Gas saving trick
-        _player1[gameID] = msg.sender;
-        _betAmount[gameID] = _amount - 2e12;
-        _gamesReady[gameID].player1 = msg.sender;
-        _gamesReady[gameID].gameID = gameID;
-        _gamesReady[gameID].betAmount = _amount - 2e12;
+        Games storage game = _games[_gameID];
+        game.player1 = msg.sender;
+        game.betAmount = _amount - 2e12;
+        game.gameID = _gameID;
         _gameID++;
     }
 
@@ -115,22 +111,18 @@ contract CoinFlip is ERC20 {
         uint256 _id,
         uint8 _random
     ) public numCheck(_random) {
+        Games storage game = _games[_id];
         require(
-            // _amount == _betAmount[_id] + 2e12,
-            _amount == _gamesReady[_id].betAmount + 2e12,
+            _amount == game.betAmount + 2e12,
             "Amount not equal to bet amount"
         );
         require(_id < _gameID, "Game doesn't exist");
-        require(_player2[_id] == address(0), "2nd player already exists");
-        require(
-            _player1[_id] != msg.sender,
-            "You can't play against yourself."
-        );
+        require(game.player2 == address(0), "2nd player already exists");
+        require(game.player1 != msg.sender, "You can't play against yourself.");
+
+        game.player2 = msg.sender;
         transfer(address(this), _amount);
-        _player2[_id] = msg.sender;
         _setCoinFlipper(_id, _random);
-        _gamesReady[_id].player2 = msg.sender;
-        _gamesReady[_id].coinFlipper = _coinFlipper[_id];
     }
 
     /**
@@ -140,29 +132,23 @@ contract CoinFlip is ERC20 {
      * @dev Use transferFrom() to withdraw your earnings.
      */
     function startGame(uint256 _id, uint8 _random) public numCheck(_random) {
-        GameReady memory gameReady = _gamesReady[_id];
+        Games storage game = _games[_id];
+        require(msg.sender == game.coinFlipper, "You're not the coin flipper");
         require(
-            msg.sender == gameReady.coinFlipper,
-            "You're not the coin flipper"
-        );
-        require(
-            gameReady.player2 != address(0) && gameReady.betAmount != 0,
+            game.player2 != address(0) && game.betAmount != 0,
             "2nd player does not exist"
         );
 
-        uint256 totalEarnings = gameReady.betAmount + 2e12;
-        address player1 = gameReady.player1;
-
         if (_random == 1) {
-            _approve(address(this), gameReady.coinFlipper, totalEarnings);
+            _approve(address(this), game.coinFlipper, game.betAmount + 2e12);
         } else {
-            if (gameReady.coinFlipper == player1) {
-                _approve(address(this), _player2[_id], totalEarnings);
+            if (game.coinFlipper == game.player1) {
+                _approve(address(this), game.player2, game.betAmount + 2e12);
             } else {
-                _approve(address(this), player1, totalEarnings);
+                _approve(address(this), game.player1, game.betAmount + 2e12);
             }
         }
-        delete _gamesReady[_id];
+        delete _games[_id];
     }
 
     /**
@@ -171,10 +157,11 @@ contract CoinFlip is ERC20 {
      * @dev Is called by betTokens()
      */
     function _setCoinFlipper(uint256 _id, uint8 _random) private {
+        Games storage game = _games[_id];
         if (_random == 1) {
-            _coinFlipper[_id] = _player1[_id];
+            game.coinFlipper = game.player1;
         } else {
-            _coinFlipper[_id] = _player2[_id];
+            game.coinFlipper = game.player2;
         }
     }
 }
