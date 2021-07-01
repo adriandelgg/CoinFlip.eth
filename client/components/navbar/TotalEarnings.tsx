@@ -10,16 +10,18 @@ const TotalEarnings = () => {
 	}, []);
 
 	useEffect(() => {
-		contract.on('Transfer', () => {
-			getEarnings();
-		});
-	});
+		contract.on('Transfer', getEarnings);
+		return () => {
+			contract.removeListener('Transfer', getEarnings);
+		};
+	}, []);
 
 	useEffect(() => {
-		contract.on('Approval', () => {
-			getEarnings();
-		});
-	});
+		contract.on('Approval', getEarnings);
+		return () => {
+			contract.removeListener('Approval', getEarnings);
+		};
+	}, []);
 
 	async function getEarnings() {
 		const earningsInEther = String(

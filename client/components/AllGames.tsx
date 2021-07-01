@@ -29,7 +29,7 @@ const AllGames = () => {
 
 		for (let i = gameID; i > gameID - 10; i--) {
 			if (i == -1) break;
-			const gameStruct = await contract.getGamesReady(i);
+			const gameStruct = await contract.getGames(i);
 
 			if (gameStruct[0] !== account0 && !games.includes(gameStruct)) {
 				totalGames.push(gameStruct);
@@ -54,7 +54,7 @@ const AllGames = () => {
 						{coinFlipper === account0 ? (
 							contract.signer._address !== player1 && player2 === account0 ? (
 								<button
-									className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded"
+									className="bg-red-500 hover:bg-red-700 btn"
 									onClick={async () =>
 										await contract.betTokens(
 											betAmount.add(ethers.utils.parseUnits('2', 12)),
@@ -66,13 +66,13 @@ const AllGames = () => {
 									Challenge
 								</button>
 							) : (
-								<button className="bg-gray-500 hover:bg-gray-700 text-white font-bold py-1 px-4 rounded">
+								<button className="bg-gray-500 btn cursor-default">
 									Waiting Challenger
 								</button>
 							)
 						) : contract.signer._address === coinFlipper ? (
 							<button
-								className="bg-green-500 hover:bg-green-700 text-white font-bold py-1 px-4 rounded"
+								className="bg-green-500 hover:bg-green-700 btn"
 								onClick={async () => {
 									const random = Math.floor(Math.random() * 2) + 1;
 									await contract.startGame(gameID, random);
@@ -84,8 +84,8 @@ const AllGames = () => {
 								Start Game
 							</button>
 						) : (
-							<button className="bg-gray-500 text-white font-bold py-1 px-4 rounded">
-								Players Set
+							<button className="bg-gray-500 btn cursor-default">
+								Waiting for Flipper to Start
 							</button>
 						)}
 					</div>

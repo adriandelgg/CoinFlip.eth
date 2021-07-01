@@ -21,11 +21,11 @@ const MetaMask = () => {
 
 				// Rinkeby
 				if (chainId === '0x4') {
-					contractAddress = '0x01644A437eD185E6e64443031B8723C0c6074e9F';
+					contractAddress = '0x7a97535933Bfc82F65f7113a5a882310fc262385';
 
 					// Hardhat Local
 				} else if (chainId === '0x7a69') {
-					contractAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9';
+					contractAddress = '0xE2b5bDE7e80f89975f7229d78aD9259b2723d11F';
 				}
 				const signer = provider.getSigner(account);
 				const contract = new ethers.Contract(
