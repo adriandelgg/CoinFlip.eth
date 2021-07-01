@@ -8,6 +8,8 @@ contract CoinFlip is ERC20 {
         _mint(address(this), 10000000 * 10**decimals());
     }
 
+    // @self Can remove all mappings and replace them with struct's keys
+
     // Keeps track of the number of games created
     uint256 private _gameID;
 
@@ -114,11 +116,16 @@ contract CoinFlip is ERC20 {
         uint8 _random
     ) public numCheck(_random) {
         require(
-            _amount == _betAmount[_id] + 2e12,
+            // _amount == _betAmount[_id] + 2e12,
+            _amount == _gamesReady[_id].betAmount + 2e12,
             "Amount not equal to bet amount"
         );
         require(_id < _gameID, "Game doesn't exist");
         require(_player2[_id] == address(0), "2nd player already exists");
+        require(
+            _player1[_id] != msg.sender,
+            "You can't play against yourself."
+        );
         transfer(address(this), _amount);
         _player2[_id] = msg.sender;
         _setCoinFlipper(_id, _random);
@@ -133,24 +140,29 @@ contract CoinFlip is ERC20 {
      * @dev Use transferFrom() to withdraw your earnings.
      */
     function startGame(uint256 _id, uint8 _random) public numCheck(_random) {
-        address coinFlipper = _coinFlipper[_id];
-        require(msg.sender == coinFlipper, "You're not the coin flipper");
+        GameReady memory gameReady = _gamesReady[_id];
+        require(
+            msg.sender == gameReady.coinFlipper,
+            "You're not the coin flipper"
+        );
+        require(
+            gameReady.player2 != address(0) && gameReady.betAmount != 0,
+            "2nd player does not exist"
+        );
 
-        uint256 totalEarnings = _betAmount[_id] + 2e12;
-        address player1 = _player1[_id];
+        uint256 totalEarnings = gameReady.betAmount + 2e12;
+        address player1 = gameReady.player1;
 
         if (_random == 1) {
-            _approve(address(this), coinFlipper, totalEarnings);
-            delete _gamesReady[_id];
+            _approve(address(this), gameReady.coinFlipper, totalEarnings);
         } else {
-            if (coinFlipper == player1) {
+            if (gameReady.coinFlipper == player1) {
                 _approve(address(this), _player2[_id], totalEarnings);
-                delete _gamesReady[_id];
             } else {
                 _approve(address(this), player1, totalEarnings);
-                delete _gamesReady[_id];
             }
         }
+        delete _gamesReady[_id];
     }
 
     /**

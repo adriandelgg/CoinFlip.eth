@@ -11,11 +11,9 @@ const NewGame = () => {
 		const result = await contract.balanceOf(
 			'0x5FbDB2315678afecb367f032d93F642f64180aa3'
 		);
-		console.log(result);
 
 		if (amount) {
 			const betAmount = ethers.utils.parseUnits(amount);
-			console.log(betAmount.toString());
 			const result = await contract.createGame(betAmount);
 			setAmount('');
 		}

@@ -11,7 +11,7 @@ describe('CoinFlip', function () {
 		contract2 = contract.connect(alice);
 	});
 
-	xdescribe('Checking ERC20 Tokens', async function () {
+	describe('Checking ERC20 Tokens', async function () {
 		it('should store tokens to contract on deployment', async () => {
 			// Checks that contract has tokens stored when deployed
 			const result = await contract.balanceOf(contract.address);
@@ -40,7 +40,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	xdescribe('Setting up Player 1 & Game', async function () {
+	describe('Setting up Player 1 & Game', async function () {
 		it('should revert if player is not 1 or 2', async () => {
 			await expect(contract.getPlayerAddress(7, 0)).to.be.reverted;
 			await expect(contract.getPlayerAddress(3, 0)).to.be.revertedWith(
@@ -78,7 +78,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	xdescribe('Setting up Player 2', () => {
+	describe('Setting up Player 2', () => {
 		beforeEach(async function () {
 			await contract.getTokens(oneEther);
 			await contract2.getTokens(oneEther);
@@ -114,7 +114,7 @@ describe('CoinFlip', function () {
 		});
 	});
 
-	xdescribe('Playing a Game', async function () {
+	describe('Playing a Game', async function () {
 		beforeEach(async function () {
 			await contract.getTokens(oneEther);
 			await contract2.getTokens(oneEther);
@@ -188,10 +188,10 @@ describe('CoinFlip', function () {
 
 		it('should check gas for betTokens()', async () => {
 			await contract.createGame(3e12);
-			const result = await contract.estimateGas.betTokens(3e12, 1, 1);
+			const result = await contract2.estimateGas.betTokens(3e12, 1, 1);
 			console.log(result.toString());
 
-			await contract.betTokens(3e12, 1, 1);
+			await contract2.betTokens(3e12, 1, 1);
 		});
 	});
 });
