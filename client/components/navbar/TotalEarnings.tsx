@@ -27,9 +27,9 @@ const TotalEarnings = () => {
 	}
 
 	return (
-		<div className="text-center">
-			<h2>Total Earnings</h2>
-			<p>{earnings} FLIP</p>
+		<div>
+			<h2 className="pt-1">Total Earnings</h2>
+			<p className="pb-1">{earnings} FLIP</p>
 			<button
 				className="btn bg-yellow-500 hover:bg-yellow-600"
 				onClick={withdrawEarnings}

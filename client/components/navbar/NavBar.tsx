@@ -9,7 +9,7 @@ const NavBar: React.FC = () => {
 	const { account } = useContext(Web3Context);
 
 	return (
-		<header>
+		<header className="text-center mb-10">
 			<nav className="flex justify-around align-center">
 				{!account ? (
 					<MetaMask />
@@ -17,8 +17,8 @@ const NavBar: React.FC = () => {
 					<>
 						<GetTokens />
 						<TotalEarnings />
-						<div className="">
-							<h3 className="text-center py-1">Wallet Connected</h3>
+						<div>
+							<h3 className="py-1">Wallet Connected ✅</h3>
 							<button
 								className="bg-blue-500 hover:bg-blue-600 btn"
 								onClick={() => console.log(account)}

@@ -8,13 +8,10 @@ const NewGame = () => {
 
 	async function createNewGame(e: React.MouseEvent<HTMLButtonElement>) {
 		e.preventDefault();
-		const result = await contract.balanceOf(
-			'0x5FbDB2315678afecb367f032d93F642f64180aa3'
-		);
 
 		if (amount) {
-			const betAmount = ethers.utils.parseUnits(amount);
-			const result = await contract.createGame(betAmount);
+			const betAmount = ethers.utils.parseEther(amount);
+			await contract.createGame(betAmount);
 			setAmount('');
 		}
 	}
