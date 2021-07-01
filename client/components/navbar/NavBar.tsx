@@ -9,7 +9,7 @@ const NavBar: React.FC = () => {
 	const { account } = useContext(Web3Context);
 
 	return (
-		<header className="text-center mb-10">
+		<header className="text-center mb-10 mt-1">
 			<nav className="flex justify-around align-center">
 				{!account ? (
 					<MetaMask />

@@ -10,9 +10,9 @@ export default function Home() {
 	return (
 		<>
 			<NavBar />
-			<div className="text-center">
-				<h1>CoinFlip ETH Game</h1>
-				<h2>by Adrian Delgado</h2>
+			<div className="text-center mb-6">
+				<h1 className="text-2xl">CoinFlip ETH Game</h1>
+				<h2 className="text-xl">by Adrian Delgado</h2>
 			</div>
 			{contract && (
 				<main>
