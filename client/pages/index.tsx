@@ -22,7 +22,7 @@ export default function Home() {
 							<a className="text-blue-400 underline" href="" target="_blank">
 								Github Source Code
 							</a>{' '}
-							and see the instructions on how to run on Hardhat local network.
+							and see the instructions on how to run on the Hardhat local network.
 						</p>
 						<br />
 						<p>

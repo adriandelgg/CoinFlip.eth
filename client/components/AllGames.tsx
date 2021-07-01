@@ -47,10 +47,12 @@ const AllGames = () => {
 				const [player1, player2, coinFlipper, betAmount, gameID] = game;
 
 				return (
-					<div className="action-card text-center m-3" key={gameID}>
-						<h3>Game {String(+gameID)}</h3>
+					<div className="game-card text-center m-3" key={gameID}>
+						<h3 className="text-lg underline">Game {String(+gameID)}</h3>
 						<h4>Amount Bet:</h4>
-						<p>{String(+ethers.utils.formatUnits(betAmount, 'ether'))} FLIP</p>
+						<p className="mb-2">
+							{String(+ethers.utils.formatUnits(betAmount, 'ether'))} FLIP
+						</p>
 						{coinFlipper === account0 ? (
 							contract.signer._address !== player1 && player2 === account0 ? (
 								<button

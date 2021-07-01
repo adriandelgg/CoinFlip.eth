@@ -27,6 +27,7 @@ const NewGame = () => {
 				id="bet-amount"
 				type="number"
 				name="amount"
+				value={amount || ''}
 				placeholder="Amount to bet..."
 				required={true}
 				min={0}
