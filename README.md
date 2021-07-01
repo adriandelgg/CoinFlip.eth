@@ -1,9 +1,10 @@
-🪙 CoinFlip ETH Game by Adrian Delgado 👨‍💻
+# 🪙 CoinFlip ETH Game by Adrian Delgado 👨‍💻
 
 🎮 Demo App: https://coinflip-eth.vercel.app/
 
 🎨 Tools Used: Solidity, Hardhat, Ethers.js, TypeScript, React, Waffle, ERC20, Tailwind CSS, Next.js, Chai.
 
+## Instructions
 ### Rinkeby
 
 Using the Rinkeby test network will be the easiest way to use this app.

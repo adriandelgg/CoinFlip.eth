@@ -3,7 +3,13 @@ pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
 
-// @dev Use transferFrom() to withdraw your earnings.
+/**
+ * @title Ethereum CoinFlipping Multiplayer Betting Game
+ * @author Adrian Delgado - https://github.com/adriandelgg
+ * @dev Use transferFrom() to withdraw your earnings.
+ * Best if used with Hardhat local network, but the easiest
+ * way to try it is by using the Rinkeby test net.
+ */
 
 contract CoinFlip is ERC20 {
     constructor() ERC20("Coin Flip", "FLIP") {
