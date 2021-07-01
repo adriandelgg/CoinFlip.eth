@@ -1,5 +1,6 @@
 import { useContext, useEffect, useState } from 'react';
 import { Web3Context } from './Web3Context';
+const account0 = '0x0000000000000000000000000000000000000000';
 
 const AllGames = () => {
 	const { contract, ethers } = useContext(Web3Context);
@@ -9,21 +10,6 @@ const AllGames = () => {
 		getGames();
 	}, []);
 
-	// async function getGameIDs() {
-	// 	const gameID = await contract.getGameID();
-	// 	if (gameID) {
-	// 		const totalGames = [];
-	// 		for (let i = gameID; i >= 0; i--) {
-	// 			const gameStruct = await contract.getGamesReady(i);
-
-	// 			console.log(gameStruct);
-	// 			if (+gameStruct.betAmount) {
-	// 				totalGames.push(gameStruct);
-	// 			}
-	// 		}
-	// 	}
-	// }
-
 	async function getGames() {
 		const gameID = +(await contract.getGameID()) - 1;
 		if (gameID === -1) return;
@@ -31,24 +17,38 @@ const AllGames = () => {
 
 		for (let i = gameID; i < gameID + 10; i++) {
 			const gameStruct = await contract.getGamesReady(i);
-			console.log(gameStruct);
-			totalGames.push(gameStruct);
-			setGames(totalGames);
+
+			if (gameStruct[0] !== account0) {
+				totalGames.push(gameStruct);
+				setGames(totalGames);
+			}
 		}
 	}
 
-	// games.map(game => {
-	// 	const []
-	// })
-
 	return (
 		<section>
-			<div>
-				{/* <h3>Game {id}</h3> */}
-				<h4>Amount Bet:</h4>
-				<p></p>
-				<button>Bet In</button>
-			</div>
+			{games.map(game => {
+				const [player1, player2, coinFlipper, betAmount, gameID] = game;
+				return (
+					<div className="action-card" key={+gameID}>
+						<h3>Game {String(+gameID)}</h3>
+						<h4>Amount Bet:</h4>
+						<p>{String(+betAmount)} FLIP</p>
+						<button
+							className="bg-red-500 hover:bg-red-700 text-white font-bold py-1 px-4 rounded"
+							onClick={async () =>
+								await contract.betTokens(
+									betAmount.add(ethers.utils.parseUnits('2', 12)),
+									gameID,
+									Math.floor(Math.random() * 2) + 1
+								)
+							}
+						>
+							Challenge
+						</button>
+					</div>
+				);
+			})}
 		</section>
 	);
 };

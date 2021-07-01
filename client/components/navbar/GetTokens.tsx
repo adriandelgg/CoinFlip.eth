@@ -9,7 +9,7 @@ const GetTokens = () => {
 			<h3>Token Faucet</h3>
 			<button
 				className="btn bg-green-500 hover:bg-green-600"
-				onClick={async () => await contract.getTokens(oneEther)}
+				onClick={async () => await contract.getTokens(oneEther.mul('3'))}
 			>
 				Get 3 FLIP
 			</button>

@@ -97,6 +97,7 @@ contract CoinFlip is ERC20 {
         _betAmount[gameID] = _amount - 2e12;
         _gamesReady[gameID].player1 = msg.sender;
         _gamesReady[gameID].gameID = gameID;
+        _gamesReady[gameID].betAmount = _amount - 2e12;
         _gameID++;
     }
 
@@ -122,7 +123,6 @@ contract CoinFlip is ERC20 {
         _player2[_id] = msg.sender;
         _setCoinFlipper(_id, _random);
         _gamesReady[_id].player2 = msg.sender;
-        _gamesReady[_id].betAmount = _amount - 2e12;
         _gamesReady[_id].coinFlipper = _coinFlipper[_id];
     }
 

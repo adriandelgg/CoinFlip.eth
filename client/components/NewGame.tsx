@@ -40,7 +40,7 @@ const NewGame = () => {
 			<p className="text-xs pt-2">
 				*Bet amount must be more than 2 szabo (2e12).
 			</p>
-			<p className="text-center">{amount || 0} Ξ</p>
+			<p className="text-center">{amount || 0} FLIP</p>
 			<button
 				className="py-1 px-4 mx-auto mt-4 bg-green-400
         text-white font-bold w-max rounded"
