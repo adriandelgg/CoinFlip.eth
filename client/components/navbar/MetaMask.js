@@ -22,7 +22,7 @@ const MetaMask = () => {
 
 				setProvider(provider);
 				setContract(contract);
-				setAccount(account);
+				setAccount(contract.signer._address);
 			} else if (window.web3) {
 				console.log('Update MetaMask');
 			} else {

@@ -1,21 +1,22 @@
 import { useContext } from 'react';
 import { Web3Context } from '../Web3Context';
+
 import MetaMask from './MetaMask';
-import Image from 'next/image';
 import GetTokens from './GetTokens';
+import TotalEarnings from './TotalEarnings';
 
 const NavBar: React.FC = () => {
 	const { account } = useContext(Web3Context);
 
 	return (
 		<header>
-			{/* <Image src={swagcheck} /> */}
 			<nav className="flex justify-around align-center">
 				{!account ? (
 					<MetaMask />
 				) : (
 					<>
 						<GetTokens />
+						<TotalEarnings />
 						<div className="">
 							<h3 className="text-center py-1">Wallet Connected</h3>
 							<button
