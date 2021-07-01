@@ -19,3 +19,7 @@
 .btn {
 	@apply text-white font-bold py-1 px-4 rounded;
 }
+
+.p-clamp {
+	width: clamp(45ch, 50%, 75ch);
+}
