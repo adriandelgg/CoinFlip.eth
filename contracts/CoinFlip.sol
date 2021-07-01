@@ -2,29 +2,18 @@
 pragma solidity ^0.8.0;
 
 import "@openzeppelin/contracts/token/ERC20/ERC20.sol";
-import "hardhat/console.sol";
+
+// @dev Use transferFrom() to withdraw your earnings.
 
 contract CoinFlip is ERC20 {
     constructor() ERC20("Coin Flip", "FLIP") {
         _mint(address(this), 10000000 * 10**decimals());
     }
 
-    // @self Can remove all mappings and replace them with struct's keys
-
     // Keeps track of the number of games created
     uint256 private _gameID;
 
-    // Mapping from game ID to the addresses of the players
-    mapping(uint256 => address) private _player1;
-    mapping(uint256 => address) private _player2;
-
-    // Mapping from game ID to bet amount
-    mapping(uint256 => uint256) private _betAmount;
-
-    // Mapping from game ID to player that gets to flip coin
-    mapping(uint256 => address) private _coinFlipper;
-
-    // Struct for games that are ready to be played
+    // Struct holding all the information about a game
     struct Games {
         address player1;
         address player2;
@@ -33,7 +22,7 @@ contract CoinFlip is ERC20 {
         uint256 gameID;
     }
 
-    // Mapping from game ID to games ready struct
+    // Mapping from game ID to Games struct
     mapping(uint256 => Games) private _games;
 
     // Checks to make sure the number given is 1 or 2
@@ -49,12 +38,12 @@ contract CoinFlip is ERC20 {
 
     // Returns total amount bet for X game
     function getAmountBet(uint256 _id) public view returns (uint256) {
-        return _betAmount[_id];
+        return _games[_id].betAmount;
     }
 
     // Returns who the coin flipper is for X game
     function getCoinFlipper(uint256 _id) public view returns (address) {
-        return _coinFlipper[_id];
+        return _games[_id].coinFlipper;
     }
 
     // Returns the players' address assigned to a game
