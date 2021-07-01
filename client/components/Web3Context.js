@@ -18,8 +18,9 @@ const Web3Provider = ({ children }) => {
 	});
 
 	function newAccount(accounts) {
-		setContract(contract.connect(provider.getSigner(accounts[0])));
-		setAccount(accounts[0]);
+		window.location.reload();
+		// setContract(contract.connect(provider.getSigner(accounts[0])));
+		// setAccount(accounts[0]);
 	}
 
 	// Listens for network changes to reload the page

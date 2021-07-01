@@ -9,6 +9,18 @@ const TotalEarnings = () => {
 		getEarnings();
 	}, []);
 
+	useEffect(() => {
+		contract.on('Transfer', () => {
+			getEarnings();
+		});
+	});
+
+	useEffect(() => {
+		contract.on('Approval', () => {
+			getEarnings();
+		});
+	});
+
 	async function getEarnings() {
 		const earningsInEther = String(
 			ethers.utils.formatEther(
@@ -19,11 +31,13 @@ const TotalEarnings = () => {
 	}
 
 	async function withdrawEarnings() {
-		await contract.transferFrom(
-			contract.address,
-			contract.signer._address,
-			ethers.utils.parseUnits(earnings)
-		);
+		if (earnings !== '0.0') {
+			await contract.transferFrom(
+				contract.address,
+				contract.signer._address,
+				ethers.utils.parseUnits(earnings)
+			);
+		}
 	}
 
 	return (

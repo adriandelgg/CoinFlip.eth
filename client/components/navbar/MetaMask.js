@@ -15,7 +15,7 @@ const MetaMask = () => {
 				});
 				const signer = provider.getSigner(account);
 				const contract = new ethers.Contract(
-					'0x124dDf9BdD2DdaD012ef1D5bBd77c00F05C610DA',
+					'0xB468647B04bF657C9ee2de65252037d781eABafD',
 					artifact.abi,
 					signer
 				);
