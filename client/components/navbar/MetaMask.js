@@ -16,9 +16,20 @@ const MetaMask = () => {
 				const [account] = await ethereum.request({
 					method: 'eth_requestAccounts'
 				});
+				const chainId = await ethereum.request({ method: 'eth_chainId' });
+				let contractAddress;
+
+				// Rinkeby
+				if (chainId === '0x4') {
+					contractAddress = '0x5e57cD05635f25Ad915728B79697DB07066ac7dc';
+
+					// Hardhat Local
+				} else if (chainId === '0x7a69') {
+					contractAddress = '0xDc64a140Aa3E981100a9becA4E685f962f0cF6C9';
+				}
 				const signer = provider.getSigner(account);
 				const contract = new ethers.Contract(
-					'0xB468647B04bF657C9ee2de65252037d781eABafD',
+					contractAddress,
 					abi,
 					// artifact.abi,
 					signer
