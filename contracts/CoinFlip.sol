@@ -135,12 +135,24 @@ contract CoinFlip is ERC20 {
         );
 
         if (_random == 1) {
-            _approve(address(this), game.coinFlipper, game.betAmount + 2e12);
+            _approve(
+                address(this),
+                game.coinFlipper,
+                game.betAmount * 2 + 2e12
+            );
         } else {
             if (game.coinFlipper == game.player1) {
-                _approve(address(this), game.player2, game.betAmount + 2e12);
+                _approve(
+                    address(this),
+                    game.player2,
+                    game.betAmount * 2 + 2e12
+                );
             } else {
-                _approve(address(this), game.player1, game.betAmount + 2e12);
+                _approve(
+                    address(this),
+                    game.player1,
+                    game.betAmount * 2 + 2e12
+                );
             }
         }
         delete _games[_id];

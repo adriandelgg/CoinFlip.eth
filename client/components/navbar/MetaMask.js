@@ -21,7 +21,7 @@ const MetaMask = () => {
 
 				// Rinkeby
 				if (chainId === '0x4') {
-					contractAddress = '0x7a97535933Bfc82F65f7113a5a882310fc262385';
+					contractAddress = '0x2562ce044A5461cCaC7DB770D6D829eD65834224';
 
 					// Hardhat Local
 				} else if (chainId === '0x7a69') {
