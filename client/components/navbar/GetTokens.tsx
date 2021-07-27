@@ -11,9 +11,7 @@ const GetTokens = () => {
 
 	useEffect(() => {
 		contract.on('Transfer', getBalance);
-		return () => {
-			contract.removeListener('Transfer', getBalance);
-		};
+		return () => contract.removeListener('Transfer', getBalance);
 	}, []);
 
 	async function getBalance() {

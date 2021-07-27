@@ -19,15 +19,20 @@ export default function Home() {
 						<Image src="/metamask.svg" width={200} height={200} />
 						<p className="mt-6">
 							To use this dApp, switch your network to Rinkeby, or go to{' '}
-							<a className="text-blue-400 underline" href="" target="_blank">
+							<a
+								className="text-blue-400 underline"
+								href="https://github.com/adriandelgg/CoinFlip.eth"
+								target="_blank"
+							>
 								Github Source Code
 							</a>{' '}
-							and see the instructions on how to run on the Hardhat local network.
+							and see the instructions on how to run on the Hardhat local
+							network.
 						</p>
 						<br />
 						<p>
-							If you're using Rinkeby, you will need some test Ether which you can
-							get at a faucet.
+							If you're using Rinkeby, you will need some test Ether which you
+							can get at a faucet.
 							<br />
 							<a
 								className="text-blue-400 underline"
