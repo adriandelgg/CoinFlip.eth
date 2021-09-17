@@ -25,7 +25,7 @@ const MetaMask = () => {
 
 					// Hardhat Local
 				} else if (chainId === '0x7a69') {
-					contractAddress = '0xE2b5bDE7e80f89975f7229d78aD9259b2723d11F';
+					contractAddress = '0x5FbDB2315678afecb367f032d93F642f64180aa3';
 				}
 				const signer = provider.getSigner(account);
 				const contract = new ethers.Contract(
